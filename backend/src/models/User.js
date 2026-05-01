@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const bcrypt = require('bcryptjs'); // <-- Added bcryptjs
+const bcrypt = require('bcryptjs');
 
 const User = sequelize.define('User', {
   id: {
@@ -43,14 +43,31 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
     unique: true,
-    sparse: true,
   },
   emailStatus: {
     type: DataTypes.STRING,
     defaultValue: 'UNVERIFIED',
     allowNull: false,
+  },
+  verificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  verificationTokenExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  // --- MOVED THESE FIELDS HERE INTO THE ATTRIBUTES OBJECT ---
+  resetPasswordToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  resetPasswordExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
   }
 }, {
+  // --- OPTIONS OBJECT (3rd argument) ---
   tableName: 'users',
   timestamps: true,
   hooks: {
@@ -59,14 +76,12 @@ const User = sequelize.define('User', {
         user.email = user.email.toLowerCase().trim();
       }
     },
-    // <-- NEW: Hash password before creating a new user
     beforeCreate: async (user) => {
       if (user.passwordHash) {
         const salt = await bcrypt.genSalt(10);
         user.passwordHash = await bcrypt.hash(user.passwordHash, salt);
       }
     },
-    // <-- NEW: Hash password if the user updates their password later
     beforeUpdate: async (user) => {
       if (user.changed('passwordHash') && user.passwordHash) {
         const salt = await bcrypt.genSalt(10);
@@ -76,9 +91,8 @@ const User = sequelize.define('User', {
   }
 });
 
-// <-- NEW: Instance method to easily compare passwords during login
 User.prototype.isValidPassword = async function(passwordAttempt) {
-  if (!this.passwordHash) return false; // Prevent checking against OAuth accounts
+  if (!this.passwordHash) return false;
   return await bcrypt.compare(passwordAttempt, this.passwordHash);
 };
 

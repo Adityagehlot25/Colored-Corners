@@ -10,9 +10,14 @@ router.get('/google/login', (req, res) => {
 
 // The callback endpoint the IdP hits after user grants permission
 router.get('/google/callback', authController.googleCallback);
+router.get('/verify-email/:token', authController.verifyEmail);
 
 // Local authentication routes
 router.post('/register', authController.register);
 router.post('/login', authController.login);
+// Add this under your other local auth routes
+router.post('/resend-verification', authController.resendVerification);
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/reset-password/:token', authController.resetPassword);
 
 module.exports = router;
