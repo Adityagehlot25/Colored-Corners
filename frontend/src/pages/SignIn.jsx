@@ -16,10 +16,10 @@ export default function SignIn() {
     try {
       const res = await axios.post(`${backendUrl}/auth/login`, { email, password });
       localStorage.setItem('token', res.data.token);
-      alert('✅ Login Successful!');
+      navigate('/catalogue');
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';
-      
+
       // The Gatekeeper Redirect
       if (err.response?.status === 403 && errorMessage.includes('verify')) {
         navigate('/pending-verification', { state: { email } });
@@ -38,7 +38,7 @@ export default function SignIn() {
         <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} />
         <button type="submit" style={styles.button}>Login</button>
       </form>
-      
+
       <div style={{ marginTop: '10px', textAlign: 'right' }}>
         <Link to="/forgot-password" style={{ fontSize: '14px', color: '#555' }}>Forgot Password?</Link>
       </div>
