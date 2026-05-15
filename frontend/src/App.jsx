@@ -8,6 +8,10 @@ import PendingVerification from './pages/PendingVerification';
 import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import OAuthSuccess from './pages/OAuthSuccess';
+import ChooseRole from './pages/ChooseRole';
+import Dashboard from './pages/Dashboard';
+import SellerDashboard from './pages/SellerDashboard';
 import Catalogue from './pages/Catalogue';
 
 export default function App() {
@@ -21,6 +25,10 @@ export default function App() {
         <Route path="/verify/:token" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/oauth-success" element={<OAuthSuccess />} />
+        <Route path="/choose-role" element={<ChooseRole />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/seller-dashboard" element={<SellerDashboard />} />
         <Route path="/catalogue" element={<Catalogue />} />
       </Routes>
     </Router>

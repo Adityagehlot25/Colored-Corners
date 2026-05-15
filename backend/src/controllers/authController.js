@@ -9,48 +9,49 @@ exports.googleCallback = async (req, res) => {
     const { code } = req.query;
 
     if (!code) {
-      return res.status(400).json({ message: 'Authorization code missing from IdP.' });
+      return res.status(400).send('Authorization code missing from IdP.');
     }
 
     const user = await oauthService.handleGoogleCallback(code);
     const internalToken = generateToken(user);
 
-    res.status(200).json({
-      message: 'Authentication successful',
-      token: internalToken,
-      user: {
-        id: user.id,
-        firstName: user.firstName,
-        role: user.role
-      }
-    });
+    // --- THE FIX: We MUST redirect back to the React frontend, NOT send JSON! ---
+    const frontendUrl = process.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/oauth-success?token=${internalToken}`);
 
   } catch (error) {
-    res.status(502).json({ 
-      message: 'Identity Provider authentication failed. Please try standard login or try again later.' 
-    });
+    console.error('OAuth Error:', error);
+    // If it fails, bounce them back to sign in
+    const frontendUrl = process.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/signin?error=oauth_failed`);
   }
 };
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, firstName, lastName } = req.body;
+    // <-- NEW: Extract 'role' from req.body
+    const { email, password, firstName, lastName, role } = req.body;
 
     const existingUser = await User.findOne({ where: { email: email.toLowerCase().trim() } });
     if (existingUser) {
       return res.status(409).json({ message: 'Email is already registered.' });
     }
 
+    // <-- NEW: Validate the role so hackers can't inject garbage data like "SUPER_HACKER"
+    const validRoles = ['CUSTOMER', 'SELLER', 'ADMIN'];
+    const assignedRole = validRoles.includes(role) ? role : 'CUSTOMER';
+
     // 1. Generate a random verification token
     const rawToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
 
-    // 2. Create the user as UNVERIFIED
+    // 2. Create the user with their assigned role
     const user = await User.create({
       email,
       passwordHash: password, 
       firstName,
       lastName,
+      role: assignedRole, // <-- NEW: Save it to the DB!
       authProvider: 'local',
       emailStatus: 'UNVERIFIED',
       verificationToken: hashedToken,
@@ -238,6 +239,29 @@ exports.resetPassword = async (req, res) => {
 
     res.status(200).json({ message: 'Password has been reset successfully! You can now log in.' });
   } catch (error) {
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+// --- ADD THIS TO THE BOTTOM OF authController.js ---
+exports.updateRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    
+    // We get req.user.id because this route will be protected by your middleware!
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+
+    // Security check
+    const validRoles = ['CUSTOMER', 'SELLER', 'ADMIN'];
+    if (validRoles.includes(role)) {
+      user.role = role;
+      await user.save();
+    }
+
+    res.status(200).json({ message: 'Role updated successfully', role: user.role });
+  } catch (error) {
+    console.error('Update Role Error:', error);
     res.status(500).json({ message: 'Internal server error.' });
   }
 };

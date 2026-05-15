@@ -15,8 +15,18 @@ export default function SignIn() {
     e.preventDefault();
     try {
       const res = await axios.post(`${backendUrl}/auth/login`, { email, password });
+      // 1. Save the token
       localStorage.setItem('token', res.data.token);
-      navigate('/catalogue');
+      
+      // 2. Extract the role (defaulting to CUSTOMER if it's missing)
+      const userRole = res.data.user?.role || 'CUSTOMER';
+
+      // 3. The Traffic Cop: Route based on their role
+      if (userRole === 'SELLER' || userRole === 'ADMIN') {
+        navigate('/dashboard');
+      } else {
+        navigate('/catalogue');
+      }
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';
 
