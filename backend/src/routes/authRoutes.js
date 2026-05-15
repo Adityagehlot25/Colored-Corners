@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const { protect } = require('../middlewares/authMiddleware');
 
 // The endpoint the frontend redirects the user to (normally handled by frontend directly, but good for SSR)
 router.get('/google/login', (req, res) => {
@@ -19,5 +20,6 @@ router.post('/login', authController.login);
 router.post('/resend-verification', authController.resendVerification);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password/:token', authController.resetPassword);
+router.put('/update-role', protect, authController.updateRole);
 
 module.exports = router;
