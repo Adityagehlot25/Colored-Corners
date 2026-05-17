@@ -97,4 +97,56 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
+// PROTECTED: Fully Update a Product
+router.put('/:id', protect, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { sku, name, desc, price, pStock, status, isPre, category, imgs } = req.body;
+    const sellerId = req.user.id;
+
+    // 1. Find the product
+    const product = await Product.findByPk(id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // 2. ENFORCE BR-CAT-03: Seller Inventory Isolation
+    if (product.sellerId !== sellerId) {
+      return res.status(403).json({ message: 'Unauthorized: You do not own this product.' });
+    }
+
+    // 3. ENFORCE BR-CAT-02: Active vs Stock rules
+    if (status === 'ACTIVE' && parseInt(pStock, 10) === 0 && !isPre) {
+      return res.status(400).json({ 
+        message: 'Validation Failed: Cannot set status to ACTIVE with 0 stock unless it is a Pre-order.' 
+      });
+    }
+
+    // 4. PREP FOR BR-CAT-01: Price Update Promotion Recalculation
+    // If the price changes, we need to know so we can eventually trigger background jobs
+    const priceChanged = parseFloat(product.price) !== parseFloat(price);
+
+    // 5. Update the fields
+    product.sku = sku;
+    product.name = name;
+    product.desc = desc || product.desc;
+    product.price = price;
+    product.pStock = parseInt(pStock, 10);
+    product.status = status;
+    product.isPre = isPre;
+    product.category = category;
+    product.imgs = imgs || product.imgs; 
+
+    // 6. Save to database
+    await product.save();
+
+    // FUTURE TODO: If priceChanged is true, publish an event to the message broker here!
+
+    res.status(200).json({ message: 'Product updated successfully!', product });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
