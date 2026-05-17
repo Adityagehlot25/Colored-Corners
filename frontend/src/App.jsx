@@ -13,6 +13,7 @@ import ChooseRole from './pages/ChooseRole';
 import Dashboard from './pages/Dashboard';
 import SellerDashboard from './pages/SellerDashboard';
 import Catalogue from './pages/Catalogue';
+import ProductDetail from './pages/ProductDetail';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/seller-dashboard" element={<SellerDashboard />} />
         <Route path="/catalogue" element={<Catalogue />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
       </Routes>
     </Router>
   );

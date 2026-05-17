@@ -43,7 +43,9 @@ export default function Dashboard() {
           gap: '20px' 
         }}>
           {items.map((i) => (
-            <div key={i.id} style={{ border: '1px solid #333', borderRadius: '12px', padding: '15px', width: '250px', backgroundColor: 'rgba(255,255,255,0.02)' }}>
+            <div key={i.id}
+            onClick={() => navigate(`/product/${i.id}`)}
+            style={{ border: '1px solid #333', borderRadius: '12px', padding: '15px', width: '250px', backgroundColor: 'rgba(255,255,255,0.02)' }}>
               <img src={i.imgs[0]} alt={i.name} style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }} />
               <h3 style={{ marginTop: '15px', fontSize: '18px' }}>{i.name}</h3>
               <p style={{ color: '#16A34A', fontWeight: 'bold', marginTop: '5px' }}>${i.price}</p>
