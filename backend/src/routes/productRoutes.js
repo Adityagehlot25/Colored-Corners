@@ -55,4 +55,46 @@ router.put('/:id/stock', protect, async (req, res) => {
   }
 });
 
+// PROTECTED: Create a new product
+router.post('/', protect, async (req, res) => {
+  try {
+    // 1. EXTRACT: Pull the data out of the incoming request
+    const { sku, name, desc, price, pStock, status, isPre, category, imgs } = req.body;
+    
+    // 2. IDENTIFY: Get the seller's ID from the decoded JWT token
+    const sellerId = req.user.id;
+
+    // 3. ENFORCE BUSINESS RULES (BR-CAT-02)
+    // Rule: Cannot be ACTIVE if stock is 0, unless it's a pre-order.
+    if (status === 'ACTIVE' && parseInt(pStock, 10) === 0 && !isPre) {
+      return res.status(400).json({ 
+        message: 'Validation Failed: Cannot set status to ACTIVE with 0 stock unless it is a Pre-order.' 
+      });
+    }
+
+    // 4. CREATE: Tell Sequelize to build and save the new record
+    const newProduct = await Product.create({
+      sellerId,
+      sku,
+      name,
+      desc,
+      price,
+      pStock,
+      status,
+      isPre,
+      category,
+      // Defaulting imgs and facets for now until we build Phase 2
+      imgs: imgs || [], 
+      facets: {}
+    });
+
+    // 5. RESPOND: Send the newly created product back to the frontend
+    res.status(201).json({ message: 'Product created successfully!', product: newProduct });
+
+  } catch (err) {
+    // If Sequelize throws an error (like a duplicate SKU), catch it here
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
