@@ -21,12 +21,13 @@ export default function SignIn() {
       // 2. Extract the role (defaulting to CUSTOMER if it's missing)
       const userRole = res.data.user?.role || 'CUSTOMER';
 
-      // 3. The Traffic Cop: Route based on their role
-      if (userRole === 'SELLER' || userRole === 'ADMIN') {
-        navigate('/dashboard');
-      } else {
-        navigate('/catalogue');
-      }
+      // // 3. The Traffic Cop: Route based on their role
+      // if (userRole === 'SELLER' || userRole === 'ADMIN') {
+      //   navigate('/dashboard');
+      // } else {
+      //   navigate('/catalogue');
+      // }
+      navigate('/dashboard');
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';
 
