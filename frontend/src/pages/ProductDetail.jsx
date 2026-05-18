@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import { useCart } from '../context/CartContext';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
 export default function ProductDetail() {
   const { id } = useParams(); // Grabs the ID from the URL!
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -86,6 +88,7 @@ export default function ProductDetail() {
                 {product.pStock > 0 ? `${product.pStock} in stock` : 'Out of Stock'}
               </p>
               <button 
+                onClick={() => addToCart(product, 1)}
                 disabled={product.pStock === 0}
                 style={{ 
                   width: '100%', padding: '15px', borderRadius: '8px', border: 'none', fontSize: '16px', fontWeight: 'bold',
