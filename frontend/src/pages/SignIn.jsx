@@ -15,12 +15,22 @@ export default function SignIn() {
     e.preventDefault();
     try {
       const res = await axios.post(`${backendUrl}/auth/login`, { email, password });
+      // 1. Save the token
       localStorage.setItem('token', res.data.token);
-      alert('✅ Login Successful!');
+      
+      // 2. Extract the role (defaulting to CUSTOMER if it's missing)
+      const userRole = res.data.user?.role || 'CUSTOMER';
+
+      // // 3. The Traffic Cop: Route based on their role
+      // if (userRole === 'SELLER' || userRole === 'ADMIN') {
+      //   navigate('/dashboard');
+      // } else {
+      //   navigate('/catalogue');
+      // }
       navigate('/dashboard');
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';
-      
+
       // The Gatekeeper Redirect
       if (err.response?.status === 403 && errorMessage.includes('verify')) {
         navigate('/pending-verification', { state: { email } });
@@ -39,7 +49,7 @@ export default function SignIn() {
         <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} />
         <button type="submit" style={styles.button}>Login</button>
       </form>
-      
+
       <div style={{ marginTop: '10px', textAlign: 'right' }}>
         <Link to="/forgot-password" style={{ fontSize: '14px', color: '#555' }}>Forgot Password?</Link>
       </div>

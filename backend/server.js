@@ -13,10 +13,14 @@ app.use(express.json());
 
 // Import Models
 const User = require('./src/models/User');
+const Product = require('./src/models/Product');
 
 // Import & Mount Routes
 const authRoutes = require('./src/routes/authRoutes');
+const productRoutes = require('./src/routes/productRoutes');
+
 app.use('/auth', authRoutes);
+app.use('/products', productRoutes);
 
 // Quick Health Check Route
 app.get('/ping', (req, res) => {
