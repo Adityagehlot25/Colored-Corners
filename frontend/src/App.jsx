@@ -16,6 +16,8 @@ import Catalogue from './pages/Catalogue';
 import ProductDetail from './pages/ProductDetail';
 import { CartProvider } from './context/CartContext';
 import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
+import OrderFailed from './pages/OrderFailed';
 
 export default function App() {
   return (
@@ -36,6 +38,8 @@ export default function App() {
           <Route path="/catalogue" element={<Catalogue />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/order-failed" element={<OrderFailed />} />
         </Routes>
       </CartProvider>
     </Router>

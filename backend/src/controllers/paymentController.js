@@ -5,7 +5,7 @@ const { createRzpOrder } = require('../services/paymentService');
 // STEP 1: The user clicks "Checkout"
 exports.initiateCheckout = async (req, res) => {
   try {
-    const { cartItems } = req.body;
+    const { cartItems , shippingAddress } = req.body;
     const userId = req.user.id; // From your JWT auth middleware
 
     // SECURITY RULE: NEVER trust the frontend total. Always recalculate on the backend.
@@ -16,6 +16,7 @@ exports.initiateCheckout = async (req, res) => {
     const newOrder = await Order.create({
       userId,
       amount: calculatedTotal,
+      shippingAddress,
       status: 'PENDING'
     });
 

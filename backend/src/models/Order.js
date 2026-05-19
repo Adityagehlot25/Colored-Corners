@@ -15,6 +15,10 @@ const Order = sequelize.define('Order', {
     type: DataTypes.DECIMAL(10, 2), 
     allowNull: false 
   },
+  shippingAddress: { 
+    type: DataTypes.JSON, // Stores the structured address (street, city, zip)
+    allowNull: true // Set to true for now so it doesn't break your existing test rows!
+  },
   status: { 
     type: DataTypes.STRING, 
     defaultValue: 'PENDING' // BR-ORD-01: Strict State Machine starts here
