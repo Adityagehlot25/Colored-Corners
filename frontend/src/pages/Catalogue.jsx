@@ -25,7 +25,7 @@ const Catalogue = () => {
                 <div key={i.id} style={{ border: '1px solid #ccc', padding: '10px', width: '250px' }}>
                     <img src={i.imgs[0]} alt={i.name} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
                     <h3>{i.name}</h3>
-                    <p>${i.price}</p>
+                    <p>₹{i.price}</p>
                 </div>
             ))}
         </div>

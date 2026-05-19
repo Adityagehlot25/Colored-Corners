@@ -8,7 +8,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 export default function Dashboard() {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
-  
+
   // 1. Add a loading state!
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +27,7 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
-    
+
     fetchItems();
   }, [navigate]);
 
@@ -44,7 +44,7 @@ export default function Dashboard() {
         <div className="mt-10 flex flex-wrap gap-5">
           {/* 3. Show pulsing skeletons if loading, otherwise show the real items */}
           {loading ? (
-             // Generate 4 fake skeleton cards while waiting for the network
+            // Generate 4 fake skeleton cards while waiting for the network
             [...Array(4)].map((_, index) => (
               <div key={index} className="border border-[#333] rounded-xl p-4 w-[250px] bg-white/5 animate-pulse">
                 <div className="w-full h-[200px] bg-gray-800 rounded-lg"></div>
@@ -57,14 +57,14 @@ export default function Dashboard() {
           ) : (
             // Your normal live data mapping
             items.map((i) => (
-              <div 
+              <div
                 key={i.id}
                 onClick={() => navigate(`/product/${i.id}`)}
                 className="border border-[#333] rounded-xl p-4 w-[250px] bg-white/5 cursor-pointer hover:-translate-y-1 hover:border-green-600/50 transition-all duration-300"
               >
                 <img src={i.imgs[0]} alt={i.name} className="w-full h-[200px] object-cover rounded-lg" />
                 <h3 className="mt-4 text-lg font-semibold">{i.name}</h3>
-                <p className="text-green-600 font-bold mt-1">${i.price}</p>
+                <p className="text-green-600 font-bold mt-1">₹{i.price}</p>
                 {i.status === 'OUT_OF_STOCK' && <span className="text-red-500 text-xs font-semibold uppercase tracking-wider">Out of Stock</span>}
               </div>
             ))
