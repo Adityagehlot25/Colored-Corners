@@ -18,11 +18,30 @@ import { CartProvider } from './context/CartContext';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import OrderFailed from './pages/OrderFailed';
+import { Toaster } from 'react-hot-toast'; // ✅ Imported correctly
 
 export default function App() {
   return (
     <Router>
       <CartProvider>
+        {/* ✅ ADDED THIS BLOCK HERE */}
+        <Toaster 
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: '#1A1A1A',
+              color: '#fff',
+              border: '1px solid #333'
+            },
+            success: {
+              iconTheme: {
+                primary: '#16A34A',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+        
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/signin" element={<SignIn />} />

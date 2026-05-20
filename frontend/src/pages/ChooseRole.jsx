@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { styles } from '../sharedStyles';
+import toast from 'react-hot-toast';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -29,7 +30,7 @@ export default function ChooseRole() {
       navigate('/dashboard');
     } catch (error) {
       console.error(error);
-      alert('❌ Failed to save role. Please try again.');
+      toast.error('Failed to save role. Please try again.');
       setLoading(false);
     }
   };

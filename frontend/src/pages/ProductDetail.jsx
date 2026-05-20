@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { useCart } from '../context/CartContext';
+import toast from 'react-hot-toast';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
@@ -127,7 +128,10 @@ export default function ProductDetail() {
                 {product.pStock > 0 ? `${product.pStock} in stock` : 'Out of Stock'}
               </p>
               <button
-                onClick={() => addToCart(product, 1)}
+                onClick={() => {
+                  addToCart(product, 1);
+                  toast.success(`${product.name} added to cart!`);
+                }}
                 disabled={product.pStock === 0}
                 className={`w-full p-4 rounded-lg border-none text-lg font-bold transition-all duration-200 ${product.pStock > 0
                     ? 'bg-green-600 text-white cursor-pointer hover:bg-green-500 active:scale-[0.98]'

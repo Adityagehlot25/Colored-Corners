@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import toast from 'react-hot-toast';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
@@ -35,7 +36,7 @@ export default function SellerDashboard() {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       if (payload.role !== 'SELLER' && payload.role !== 'ADMIN') {
-        alert("🔒 Access Denied");
+        toast.error("Access Denied: Seller account required");
         return navigate('/dashboard');
       }
       setAuthorized(true);
@@ -71,18 +72,18 @@ export default function SellerDashboard() {
         await axios.put(`${backendUrl}/products/${editProductId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        alert('✅ Product updated successfully!');
+        toast.success('Product updated successfully!');
       } else {
         await axios.post(`${backendUrl}/products`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        alert('✅ Product added successfully!');
+        toast.success('Product added successfully!');
       }
 
       setShowModal(false);
       fetchInventory();
     } catch (err) {
-      alert(`❌ ${err.response?.data?.message || 'Failed to save product'}`);
+      toast.error(err.response?.data?.message || 'Failed to save product');
     }
   };
 

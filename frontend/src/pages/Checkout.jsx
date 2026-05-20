@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import toast from 'react-hot-toast';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 const rzpKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
@@ -83,7 +84,7 @@ export default function Checkout() {
   const isComplete = addr.flat && addr.building && addr.pin.length === 6 && addr.city && addr.state;
 
   const handlePayment = async () => {
-    if (!token) return alert('Please login to continue');
+    if (!token) return toast.error('Please login to continue');
     setLoading(true);
 
     try {
@@ -127,7 +128,7 @@ export default function Checkout() {
       rzp1.open();
     } catch (err) {
       console.error(err);
-      alert('Checkout failed.');
+      toast.error('Checkout failed. Please try again.');
     } finally {
       setLoading(false);
     }
