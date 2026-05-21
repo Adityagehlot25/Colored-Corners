@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const sequelize = require('./src/config/database');
-const paymentRoutes = require('./src/routes/paymentRoutes')
+const paymentRoutes = require('./src/routes/paymentRoutes');
 
 const app = express();
 

@@ -1,81 +1,117 @@
 const crypto = require('crypto');
-const Order = require('../models/Order');
+const { Order, Product } = require('../models');
 const { createRzpOrder } = require('../services/paymentService');
 
-// STEP 1: The user clicks "Checkout"
+/**
+ * Initiates the checkout process.
+ * Validates cart stock, recalculates prices securely on the server, and generates a Razorpay Order.
+ */
 exports.initiateCheckout = async (req, res) => {
   try {
-    const { cartItems , shippingAddress } = req.body;
-    const userId = req.user.id; // From your JWT auth middleware
+    const { cartItems, shippingAddress } = req.body;
+    const currentUserId = req.user.id;
 
-    // SECURITY RULE: NEVER trust the frontend total. Always recalculate on the backend.
-    // For Phase B MVP, we assume cartItems has { price, qty }
-    const calculatedTotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.qty), 0);
+    // SECURITY: Never trust the frontend's total price. 
+    // We must fetch the live prices from our database to prevent manipulation.
+    let calculatedTotal = 0;
+    
+    for (const item of cartItems) {
+      const dbProduct = await Product.findByPk(item.product.id);
+      
+      // Validate that the product exists and we have enough physical stock
+      if (!dbProduct || dbProduct.pStock < item.qty) {
+        return res.status(400).json({ 
+          message: `Item ${item.product.name} is invalid or out of stock.` 
+        });
+      }
+      calculatedTotal += Number(dbProduct.price) * item.qty;
+    }
 
-    // 1. Create a PENDING order in our PostgreSQL database
+    // 1. Create the initial order in our database with a PENDING state
     const newOrder = await Order.create({
-      userId,
+      userId: currentUserId,
       amount: calculatedTotal,
       shippingAddress,
       status: 'PENDING'
     });
 
-    // 2. Ask Razorpay for a unique Order ID (Idempotency)
-    const rzpOrder = await createRzpOrder(calculatedTotal, newOrder.id);
-
-    // 3. Save the Razorpay Order ID to our database
-    newOrder.rzpOrderId = rzpOrder.id;
+    // 2. Request a unique Order ID from the Razorpay API
+    const razorpayOrder = await createRzpOrder(calculatedTotal, newOrder.id);
+    
+    // 3. Link the Razorpay ID to our internal order and save
+    newOrder.rzpOrderId = razorpayOrder.id;
     await newOrder.save();
 
-    // 4. Send it back to the frontend to launch the payment modal
+    // 4. Send the required data back to the frontend to launch the payment modal
     res.status(200).json({
       orderId: newOrder.id,
-      rzpOrderId: rzpOrder.id,
-      amount: rzpOrder.amount,
-      currency: rzpOrder.currency
+      rzpOrderId: razorpayOrder.id,
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency
     });
-
   } catch (error) {
-    console.error('Checkout Error:', error);
-    res.status(500).json({ message: 'Failed to initiate checkout' });
+    console.error('Checkout Initiation Error:', error);
+    res.status(500).json({ message: 'Failed to initiate checkout process' });
   }
 };
 
-// STEP 2: The payment succeeds, and Razorpay sends us proof
+/**
+ * Verifies the cryptographic signature from Razorpay after a successful client-side payment.
+ * If valid, transitions the order to PAID.
+ */
 exports.verifyPayment = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, internal_order_id } = req.body;
+    const { rzpOrderId, rzpPaymentId, rzpSig, orderId } = req.body;
+    const currentUserId = req.user.id;
 
-    // SECURITY RULE: The HMAC Validation
-    // We recreate the signature using our secret key to ensure the frontend wasn't hacked.
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    // Ensure all required cryptographic proofs were sent by the frontend
+    if (!rzpOrderId || !rzpPaymentId || !rzpSig || !orderId) {
+      return res.status(400).json({ message: 'Missing required payment parameters' });
+    }
+
+    // 1. Recreate the signature using our private backend secret
+    const signatureBody = rzpOrderId + "|" + rzpPaymentId;
     const expectedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(body.toString())
+      .update(signatureBody)
       .digest('hex');
 
-    if (expectedSignature === razorpay_signature) {
-      // The payment is 100% legitimate!
-      
-      // Update our database state to PAID (BR-ORD-01)
-      await Order.update(
-        { 
-          status: 'PAID', 
-          rzpPaymentId: razorpay_payment_id, 
-          rzpSignature: razorpay_signature 
-        },
-        { where: { id: internal_order_id } }
-      );
+    // 2. SECURITY: Use timingSafeEqual to prevent timing attacks when comparing hashes
+    const isSignatureValid = crypto.timingSafeEqual(
+      Buffer.from(expectedSignature),
+      Buffer.from(rzpSig)
+    );
 
-      // (Later in Phase C, we will deduct physical stock here!)
-
-      res.status(200).json({ message: 'Payment verified successfully!' });
-    } else {
-      // Someone tampered with the data
-      res.status(400).json({ message: 'Invalid payment signature' });
+    if (!isSignatureValid) {
+      return res.status(400).json({ message: 'Invalid payment signature. Possible tampering detected.' });
     }
+
+    // 3. Update the internal order status to PAID
+    // We strictly ensure we only update if the order belongs to the user and is currently PENDING.
+    const [numberOfAffectedRows] = await Order.update(
+      { 
+        status: 'PAID', 
+        rzpPaymentId: rzpPaymentId, 
+        rzpSignature: rzpSig 
+      },
+      { 
+        where: { 
+          id: orderId, 
+          userId: currentUserId, 
+          rzpOrderId: rzpOrderId, 
+          status: 'PENDING' 
+        } 
+      }
+    );
+
+    // If no rows were updated, the order either doesn't exist, isn't PENDING, or belongs to someone else
+    if (numberOfAffectedRows === 0) {
+      return res.status(400).json({ message: 'Order update failed. Order may already be processed.' });
+    }
+
+    res.status(200).json({ message: 'Payment verified successfully.' });
   } catch (error) {
-    console.error('Verification Error:', error);
-    res.status(500).json({ message: 'Payment verification failed' });
+    console.error('Payment Verification Error:', error);
+    res.status(500).json({ message: 'Internal server error during verification' });
   }
 };
