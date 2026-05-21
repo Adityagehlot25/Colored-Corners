@@ -23,8 +23,15 @@ export default function Navbar() {
   }
 
   const handleLogout = () => {
+    // 1. Remove the auth token
     localStorage.removeItem('token');
-    navigate('/signin');
+    
+    // 2. Wipe the cart data from the browser
+    localStorage.removeItem('cart');
+    // 3. Force a hard redirect. 
+    // We use window.location instead of navigate('/signin') because a hard 
+    // reload completely flushes out the React Context memory so the cart UI resets to 0 instantly.
+    window.location.href = '/signin';
   };
 
   // Helper function for styling active links with Tailwind

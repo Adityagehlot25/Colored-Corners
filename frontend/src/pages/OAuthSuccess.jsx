@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function OAuthSuccess() {
   const [searchParams] = useSearchParams();
@@ -10,7 +11,7 @@ export default function OAuthSuccess() {
     const token = searchParams.get('token');
     
     if (!token) {
-      alert('❌ Authentication Failed');
+      toast.error('Google Authentication Failed');
       return navigate('/signin');
     }
 

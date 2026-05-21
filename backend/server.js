@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const sequelize = require('./src/config/database');
+const paymentRoutes = require('./src/routes/paymentRoutes')
 
 const app = express();
 
@@ -10,6 +11,7 @@ const app = express();
 app.use(helmet()); 
 app.use(cors());
 app.use(express.json());
+app.use('/payments', paymentRoutes);
 
 // Import Models
 const User = require('./src/models/User');
