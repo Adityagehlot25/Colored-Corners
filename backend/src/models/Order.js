@@ -40,6 +40,8 @@ const Order = sequelize.define('Order', {
     ), 
     defaultValue: 'PENDING' 
   },
+  carrier: { type: DataTypes.STRING, allowNull: true },
+  trackingId: { type: DataTypes.STRING, allowNull: true },
   
   // Razorpay Specific Identifiers
   rzpOrderId: { type: DataTypes.STRING, allowNull: true },

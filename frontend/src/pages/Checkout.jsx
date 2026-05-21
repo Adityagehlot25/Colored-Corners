@@ -168,7 +168,7 @@ export default function Checkout() {
 
     } catch (checkoutError) {
       console.error(checkoutError);
-      toast.error('Failed to initiate checkout. Please try again.');
+      toast.error(checkoutError.response?.data?.message || 'Failed to initiate checkout. Please try again.');
       setIsProcessingPayment(false);
     }
   };

@@ -1,9 +1,14 @@
 require('dotenv').config();
+require('./src/models');
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const sequelize = require('./src/config/database');
 const paymentRoutes = require('./src/routes/paymentRoutes');
+const orderRoutes = require('./src/routes/orderRoutes');
+const authRoutes = require('./src/routes/authRoutes');
+const productRoutes = require('./src/routes/productRoutes');
 
 const app = express();
 
@@ -11,18 +16,12 @@ const app = express();
 app.use(helmet()); 
 app.use(cors());
 app.use(express.json());
+
 app.use('/payments', paymentRoutes);
-
-// Import Models
-const User = require('./src/models/User');
-const Product = require('./src/models/Product');
-
-// Import & Mount Routes
-const authRoutes = require('./src/routes/authRoutes');
-const productRoutes = require('./src/routes/productRoutes');
-
+app.use('/orders', orderRoutes);
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
+
 
 // Quick Health Check Route
 app.get('/ping', (req, res) => {
