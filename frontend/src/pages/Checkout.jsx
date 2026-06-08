@@ -27,6 +27,16 @@ export default function Checkout() {
   
   // UI States
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  // --- ADD THIS BOUNCER EFFECT ---
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // Catch unauthorized direct URL access
+      navigate('/signin?redirect=/checkout');
+    }
+  }, [navigate]);
+  // --------
   
   // Location Search States (OpenStreetMap)
   const [searchQuery, setSearchQuery] = useState('');

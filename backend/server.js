@@ -10,6 +10,7 @@ const orderRoutes = require('./src/routes/orderRoutes');
 const authRoutes = require('./src/routes/authRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const { globalLimiter } = require('./src/middlewares/rateLimiter');
+const cartRoutes = require('./src/routes/cartRoutes');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/payments', paymentRoutes);
 app.use('/orders', orderRoutes);
 app.use('/auth', authRoutes);
 app.use('/products',globalLimiter, productRoutes);
+app.use('/cart',cartRoutes);
 
 
 // Quick Health Check Route

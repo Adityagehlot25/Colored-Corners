@@ -79,3 +79,33 @@ exports.updateStatus = async (req, res) => {
     res.status(500).json({ msg: 'Failed to update order status' });
   }
 };
+
+// 3. CUSTOMER: Fetch personal order history
+exports.getCustomerOrders = async (req, res) => {
+  try {
+    const currentUserId = req.user.id; // Extracted safely from JWT via protect middleware
+
+    const orders = await Order.findAll({
+      where: { userId: currentUserId },
+      include: [
+        {
+          model: OrderItem,
+          as: 'items',
+          include: [
+            {
+              model: Product,
+              as: 'product',
+              attributes: ['name', 'category', 'imgs'],
+            },
+          ],
+        },
+      ],
+      order: [['createdAt', 'DESC']], // Newest orders first
+    });
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error fetching customer order history:', error);
+    res.status(500).json({ message: 'Failed to retrieve your order history.' });
+  }
+};

@@ -79,8 +79,16 @@ export default function CartSidebar({ isOpen, onClose }) {
             </div>
             <button
               onClick={() => {
+                const token = localStorage.getItem('token');
                 onClose();
-                navigate('/checkout');
+                
+                if (!token) {
+                  // User is a guest. Send to sign-in with a redirect parameter.
+                  navigate('/signin?redirect=/checkout');
+                } else {
+                  // User is logged in. Proceed normally.
+                  navigate('/checkout');
+                }
               }}
               className="w-full py-3 bg-green-600 text-white rounded-lg text-base font-bold cursor-pointer hover:bg-green-700 transition-colors"
             >
