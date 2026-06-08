@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { protect } = require('../middlewares/authMiddleware');
+// Import the new rate limiter
+const { authLimiter } = require('../middlewares/rateLimiter');
 
 // The endpoint the frontend redirects the user to (normally handled by frontend directly, but good for SSR)
 router.get('/google/login', (req, res) => {
@@ -14,12 +16,12 @@ router.get('/google/callback', authController.googleCallback);
 router.get('/verify-email/:token', authController.verifyEmail);
 
 // Local authentication routes
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-// Add this under your other local auth routes
-router.post('/resend-verification', authController.resendVerification);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password/:token', authController.resetPassword);
+router.post('/register', authLimiter, authController.register);
+router.post('/login', authLimiter, authController.login);
+router.post('/resend-verification', authLimiter, authController.resendVerification);
+router.post('/forgot-password', authLimiter, authController.forgotPassword);
+router.post('/reset-password/:token', authLimiter, authController.resetPassword);
+
 router.put('/update-role', protect, authController.updateRole);
 
 module.exports = router;

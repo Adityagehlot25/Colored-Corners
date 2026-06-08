@@ -19,6 +19,8 @@ import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import OrderFailed from './pages/OrderFailed';
 import { Toaster } from 'react-hot-toast'; // ✅ Imported correctly
+import OrderHistory from './pages/OrderHistory';
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -59,6 +61,8 @@ export default function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/order-failed" element={<OrderFailed />} />
+          <Route path="/orders/history" element={<OrderHistory />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </CartProvider>
     </Router>

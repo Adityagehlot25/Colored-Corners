@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { styles } from '../sharedStyles';
 
@@ -10,28 +10,37 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${backendUrl}/auth/login`, { email, password });
-      // 1. Save the token
+      // 1. Grab the anonymous guest ID from local storage (if it exists)
+      const guestId = localStorage.getItem('guestId');
+
+      // 2. Pass the guestId in the payload so the backend can merge the cart!
+      const res = await axios.post(`${backendUrl}/auth/login`, { 
+        email, 
+        password,
+        guestId // <-- THE FIX: Backend catches this to merge the carts
+      });
+      
+      // Save the new permanent token
       localStorage.setItem('token', res.data.token);
       
-      // 2. Extract the role (defaulting to CUSTOMER if it's missing)
-      const userRole = res.data.user?.role || 'CUSTOMER';
+      // Optional: Clean up the guestId since they are now a real user
+      localStorage.removeItem('guestId');
+      
+      // Read the redirect parameter from the URL
+      const searchParams = new URLSearchParams(location.search);
+      const redirectUrl = searchParams.get('redirect') || '/dashboard';
 
-      // // 3. The Traffic Cop: Route based on their role
-      // if (userRole === 'SELLER' || userRole === 'ADMIN') {
-      //   navigate('/dashboard');
-      // } else {
-      //   navigate('/catalogue');
-      // }
-      navigate('/dashboard');
+      // Hard redirect to flush React Context and recognize the new login state instantly
+      window.location.href = redirectUrl;
+
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';
 
-      // The Gatekeeper Redirect
       if (err.response?.status === 403 && errorMessage.includes('verify')) {
         navigate('/pending-verification', { state: { email } });
       } else {

@@ -1,6 +1,6 @@
 const oauthService = require('../services/oauthService');
 const { generateToken } = require('../utils/jwt');
-const User = require('../models/User');
+const { User, Cart, CartItem } = require('../models');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 
@@ -85,7 +85,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, guestId } = req.body; // <-- NEW: Catch the guestId from the frontend
 
     const user = await User.findOne({ where: { email: email.toLowerCase().trim() } });
     if (!user) return res.status(401).json({ message: 'Invalid email or password.' });
@@ -94,13 +94,44 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: `Please login using your ${user.authProvider} account.` });
     }
 
-    // --- THE GATEKEEPER ---
     if (user.emailStatus !== 'VERIFIED') {
       return res.status(403).json({ message: 'Please verify your email address before logging in.' });
     }
 
     const isValid = await user.isValidPassword(password);
     if (!isValid) return res.status(401).json({ message: 'Invalid email or password.' });
+
+    // --- THE CART MERGE LOGIC (PHASE 4) ---
+    if (guestId) {
+      const guestCart = await Cart.findOne({ where: { guestId } });
+      
+      if (guestCart) {
+        const userCart = await Cart.findOne({ where: { userId: user.id } });
+        
+        if (userCart) {
+          // Both carts exist: Move guest items into the user's existing cart
+          const guestItems = await CartItem.findAll({ where: { cartId: guestCart.id } });
+          for (let item of guestItems) {
+            const existingItem = await CartItem.findOne({ where: { cartId: userCart.id, productId: item.productId } });
+            if (existingItem) {
+              existingItem.quantity += item.quantity;
+              await existingItem.save();
+            } else {
+              item.cartId = userCart.id;
+              await item.save();
+            }
+          }
+          await guestCart.destroy(); // Destroy the old guest cart
+        } else {
+          // Only the guest cart exists: Transfer ownership to the logged-in user
+          guestCart.userId = user.id;
+          guestCart.guestId = null;
+          guestCart.expiresAt = null; // Remove the 7-day guest expiration!
+          await guestCart.save();
+        }
+      }
+    }
+    // --------------------------------------
 
     const token = generateToken(user);
 
