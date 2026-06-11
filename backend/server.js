@@ -23,7 +23,7 @@ app.use('/payments', paymentRoutes);
 app.use('/orders', orderRoutes);
 app.use('/auth', authRoutes);
 app.use('/products',globalLimiter, productRoutes);
-app.use('/cart',cartRoutes);
+app.use('/cart',globalLimiter,cartRoutes);
 
 
 // Quick Health Check Route
