@@ -56,7 +56,7 @@ exports.addToCart = async (req, res) => {
 
     // BR-CRT-01: Verify Product exists and has sufficient stock
     const product = await Product.findByPk(productId);
-    if (!product || product.pStock < quantity) {
+    if (!product || (!product.isPre && product.pStock < quantity)) {
       return res.status(409).json({ message: `Only ${product ? product.pStock : 0} items left in stock.` });
     }
 
@@ -91,5 +91,62 @@ exports.addToCart = async (req, res) => {
   } catch (error) {
     console.error('Add to Cart Error:', error);
     res.status(500).json({ message: 'Failed to add item to cart.' });
+  }
+};
+
+// 3. Update item quantity
+exports.updateItemQuantity = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    const { userId, guestId } = getIdentity(req);
+    if (!userId && !guestId) return res.status(400).json({ message: 'Identity required' });
+
+    const cart = await Cart.findOne({ where: userId ? { userId } : { guestId } });
+    if (!cart) return res.status(404).json({ message: 'Cart not found' });
+
+    const cartItem = await CartItem.findOne({ where: { cartId: cart.id, productId } });
+    if (!cartItem) return res.status(404).json({ message: 'Item not in cart' });
+
+    const product = await Product.findByPk(productId);
+    if (!product.isPre && product.pStock < quantity) {
+      return res.status(400).json({ message: `Only ${product.pStock} available.` });
+    }
+
+    cartItem.quantity = quantity;
+    await cartItem.save();
+    res.status(200).json({ message: 'Quantity updated' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update quantity' });
+  }
+};
+
+// 4. Remove single item
+exports.removeItem = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { userId, guestId } = getIdentity(req);
+    
+    const cart = await Cart.findOne({ where: userId ? { userId } : { guestId } });
+    if (cart) {
+      await CartItem.destroy({ where: { cartId: cart.id, productId } });
+    }
+    res.status(200).json({ message: 'Item removed' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to remove item' });
+  }
+};
+
+// 5. Clear entire cart (Used after successful checkout)
+exports.clearCart = async (req, res) => {
+  try {
+    const { userId, guestId } = getIdentity(req);
+    const cart = await Cart.findOne({ where: userId ? { userId } : { guestId } });
+    
+    if (cart) {
+      await CartItem.destroy({ where: { cartId: cart.id } });
+    }
+    res.status(200).json({ message: 'Cart cleared' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to clear cart' });
   }
 };

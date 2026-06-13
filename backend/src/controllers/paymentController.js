@@ -15,7 +15,8 @@ exports.initiateCheckout = async (req, res) => {
     for (const item of cartItems) {
       const dbProduct = await Product.findByPk(item.product.id);
 
-      if (!dbProduct || dbProduct.pStock < item.qty) {
+      // THE FIX: Add (!dbProduct.isPre) so pre-orders bypass the stock block!
+      if (!dbProduct || (!dbProduct.isPre && dbProduct.pStock < item.qty)) {
         return res.status(400).json({ message: `Item ${item.product.name} is invalid or out of stock.` });
       }
 
@@ -75,6 +76,9 @@ exports.verifyPayment = async (req, res) => {
       .update(signatureBody)
       .digest('hex');
 
+    if (Buffer.from(expectedSignature).length !== Buffer.from(rzpSig).length) {
+      return res.status(400).json({ message: 'Invalid signature length.' });
+    }
     const isSignatureValid = crypto.timingSafeEqual(
       Buffer.from(expectedSignature),
       Buffer.from(rzpSig)
