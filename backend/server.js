@@ -11,19 +11,27 @@ const authRoutes = require('./src/routes/authRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const { globalLimiter } = require('./src/middlewares/rateLimiter');
 const cartRoutes = require('./src/routes/cartRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
+const reviewRoutes = require('./src/routes/reviewRoutes');
 
 const app = express();
 
-// Middlewares
+// --- SECURITY & BODY PARSERS ---
 app.use(helmet()); 
 app.use(cors());
-app.use(express.json());
 
+// Parses incoming JSON payloads
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
 app.use('/payments', paymentRoutes);
 app.use('/orders', orderRoutes);
 app.use('/auth', authRoutes);
-app.use('/products',globalLimiter, productRoutes);
-app.use('/cart',cartRoutes);
+app.use('/products', globalLimiter, productRoutes);
+app.use('/cart', cartRoutes);
+app.use('/admin', adminRoutes);
+app.use('/reviews', reviewRoutes);
 
 
 // Quick Health Check Route
@@ -67,4 +75,4 @@ const startServer = async () => {
   }
 };
 
-startServer();
+startServer(); 

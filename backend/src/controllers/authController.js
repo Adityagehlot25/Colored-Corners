@@ -38,7 +38,7 @@ exports.register = async (req, res) => {
     }
 
     // <-- NEW: Validate the role so hackers can't inject garbage data like "SUPER_HACKER"
-    const validRoles = ['CUSTOMER', 'SELLER', 'ADMIN'];
+    const validRoles = ['CUSTOMER', 'SELLER'];
     const assignedRole = validRoles.includes(role) ? role : 'CUSTOMER';
 
     // 1. Generate a random verification token
@@ -284,7 +284,7 @@ exports.updateRole = async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found.' });
 
     // Security check
-    const validRoles = ['CUSTOMER', 'SELLER', 'ADMIN'];
+    const validRoles = ['CUSTOMER', 'SELLER'];
     if (validRoles.includes(role)) {
       user.role = role;
       await user.save();

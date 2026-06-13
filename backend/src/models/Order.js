@@ -20,6 +20,26 @@ const Order = sequelize.define('Order', {
     type: DataTypes.DECIMAL(10, 2), 
     allowNull: false 
   },
+
+  // --- NEW COLUMNS FOR MATH PIPELINE ---
+  subtotal: { 
+    type: DataTypes.DECIMAL(10, 2), 
+    allowNull: false 
+  },
+  taxAmount: { 
+    type: DataTypes.DECIMAL(10, 2), 
+    allowNull: false 
+  },
+  discountAmount: { 
+    type: DataTypes.DECIMAL(10, 2), 
+    allowNull: false,
+    defaultValue: 0.00
+  },
+  couponCode: { 
+    type: DataTypes.STRING, 
+    allowNull: true 
+  },
+  // -------------------------------------
   
   // Store the entire geographic address object submitted during checkout
   shippingAddress: { 

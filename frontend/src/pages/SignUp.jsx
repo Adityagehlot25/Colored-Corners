@@ -46,7 +46,7 @@ export default function SignUp() {
         <input type="email" placeholder="Email Address" required value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
         <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} />
         
-        {/* --- NEW: Role Selection Dropdown --- */}
+        {/* --- Dropdown for Role Selection --- */}
         <select 
           value={role} 
           onChange={(e) => setRole(e.target.value)} 
@@ -54,7 +54,6 @@ export default function SignUp() {
         >
           <option value="CUSTOMER">I am a Customer</option>
           <option value="SELLER">I want to Sell</option>
-          <option value="ADMIN">Admin (For Testing)</option>
         </select>
         {/* ----------------------------------- */}
 
