@@ -58,6 +58,14 @@ const Product = seq.define('Product', {
     facets: {
         type: DataTypes.JSONB,
         defaultValue: {},
+    },
+    averageRating: {
+        type: DataTypes.DECIMAL(3, 2),
+        defaultValue: 0.00,
+    },
+    totalReviews: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
     }
 }, {
     timestamps: true,

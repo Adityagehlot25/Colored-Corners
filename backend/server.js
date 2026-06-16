@@ -4,26 +4,41 @@ require('./src/models');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const xss = require('xss-clean'); // <-- Added back for security!
 const sequelize = require('./src/config/database');
+
 const paymentRoutes = require('./src/routes/paymentRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
 const authRoutes = require('./src/routes/authRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const { globalLimiter } = require('./src/middlewares/rateLimiter');
 const cartRoutes = require('./src/routes/cartRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
+const reviewRoutes = require('./src/routes/reviewRoutes');
 
 const app = express();
 
-// Middlewares
+// --- SECURITY & BODY PARSERS ---
 app.use(helmet()); 
 app.use(cors());
-app.use(express.json());
 
+// Parses incoming JSON payloads
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Traps malicious HTML/JS payloads globally before they hit the DB
+app.use(xss()); 
+
+// --- RESOLVED ROUTES ---
 app.use('/payments', paymentRoutes);
 app.use('/orders', orderRoutes);
 app.use('/auth', authRoutes);
-app.use('/products',globalLimiter, productRoutes);
-app.use('/cart',globalLimiter,cartRoutes);
+
+// Combined the dev rate-limiters with your new feature routes!
+app.use('/products', globalLimiter, productRoutes);
+app.use('/cart', globalLimiter, cartRoutes);
+app.use('/admin', adminRoutes);
+app.use('/reviews', reviewRoutes);
 
 
 // Quick Health Check Route

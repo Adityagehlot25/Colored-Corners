@@ -53,6 +53,12 @@ export default function Navbar() {
             🛍️ Marketplace
           </Link>
 
+          {userRole === 'ADMIN' && (
+            <Link to="/admin-dashboard" className={getLinkClass('/admin-dashboard')}>
+              🛡️ Admin Panel
+            </Link>
+          )}
+
           {(userRole === 'SELLER' || userRole === 'ADMIN') && (
             <Link to="/seller-dashboard" className={getLinkClass('/seller-dashboard')}>
               🏪 Seller Hub

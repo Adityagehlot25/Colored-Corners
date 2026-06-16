@@ -7,6 +7,7 @@ const Order = require('./Order');
 const OrderItem = require('./OrderItem');
 const Cart = require('./Cart');
 const CartItem = require('./CartItem');
+const Review = require('./Review');
 
 // 2. Define Relationships (The Associations)
 
@@ -37,6 +38,15 @@ CartItem.belongsTo(Cart, { foreignKey: 'cartId', as: 'cart' });
 Product.hasMany(CartItem, { foreignKey: 'productId', as: 'cartItemDetails' });
 CartItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
 
+// --- NEW: Review Relationships ---
+
+// Product <-> Review (One-to-Many)
+Product.hasMany(Review, { foreignKey: 'productId', as: 'reviews' });
+Review.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+
+// User <-> Review (One-to-Many)
+User.hasMany(Review, { foreignKey: 'userId', as: 'reviews' });
+Review.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 // 3. Export everything centrally
 module.exports = {
@@ -46,5 +56,6 @@ module.exports = {
   Order,
   OrderItem,
   Cart,
-  CartItem
+  CartItem,
+  Review
 };
