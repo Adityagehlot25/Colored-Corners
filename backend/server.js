@@ -1,38 +1,22 @@
 require('dotenv').config();
-require('./src/models');
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const sequelize = require('./src/config/database');
-const paymentRoutes = require('./src/routes/paymentRoutes');
-const orderRoutes = require('./src/routes/orderRoutes');
-const authRoutes = require('./src/routes/authRoutes');
-const productRoutes = require('./src/routes/productRoutes');
-const { globalLimiter } = require('./src/middlewares/rateLimiter');
-const cartRoutes = require('./src/routes/cartRoutes');
-const adminRoutes = require('./src/routes/adminRoutes');
-const reviewRoutes = require('./src/routes/reviewRoutes');
 
 const app = express();
 
-// --- SECURITY & BODY PARSERS ---
+// Middlewares
 app.use(helmet()); 
 app.use(cors());
-
-// Parses incoming JSON payloads
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use('/payments', paymentRoutes);
-app.use('/orders', orderRoutes);
+// Import Models
+const User = require('./src/models/User');
+
+// Import & Mount Routes
+const authRoutes = require('./src/routes/authRoutes');
 app.use('/auth', authRoutes);
-app.use('/products', globalLimiter, productRoutes);
-app.use('/cart', cartRoutes);
-app.use('/admin', adminRoutes);
-app.use('/reviews', reviewRoutes);
-
 
 // Quick Health Check Route
 app.get('/ping', (req, res) => {
@@ -75,4 +59,4 @@ const startServer = async () => {
   }
 };
 
-startServer(); 
+startServer();
