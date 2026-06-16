@@ -9,6 +9,6 @@ const { checkoutLimiter } = require('../middlewares/rateLimiter');
 router.post('/checkout', protect,checkoutLimiter, paymentController.initiateCheckout);
 
 // POST /api/payments/verify
-router.post('/verify', protect, paymentController.verifyPayment);
+router.post('/verify', protect,checkoutLimiter, paymentController.verifyPayment);
 
 module.exports = router;

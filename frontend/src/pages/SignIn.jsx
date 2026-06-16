@@ -19,24 +19,25 @@ export default function SignIn() {
       const guestId = localStorage.getItem('guestId');
 
       // 2. Pass the guestId in the payload so the backend can merge the cart!
-      const res = await axios.post(`${backendUrl}/auth/login`, { 
-        email, 
+      const res = await axios.post(`${backendUrl}/auth/login`, {
+        email,
         password,
         guestId // <-- THE FIX: Backend catches this to merge the carts
       });
-      
+
       // Save the new permanent token
       localStorage.setItem('token', res.data.token);
-      
+
       // Optional: Clean up the guestId since they are now a real user
       localStorage.removeItem('guestId');
-      
+
       // Read the redirect parameter from the URL
       const searchParams = new URLSearchParams(location.search);
       const redirectUrl = searchParams.get('redirect') || '/dashboard';
-
+      // Force the path to be relative to our domain
+      const safeRedirect = redirectUrl.startsWith('/') ? redirectUrl : '/dashboard';
       // Hard redirect to flush React Context and recognize the new login state instantly
-      window.location.href = redirectUrl;
+      window.location.href = safeRedirect;
 
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';

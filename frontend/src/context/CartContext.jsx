@@ -7,31 +7,25 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  // 1. Generate or Retrieve the Guest ID
   const getGuestId = () => {
     let id = localStorage.getItem('guestId');
     if (!id) {
-      id = 'guest_' + Math.random().toString(36).substr(2, 9);
+      id = 'guest_' + crypto.randomUUID(); // Secure UUID fix!
       localStorage.setItem('guestId', id);
     }
     return id;
   };
 
-  // 2. Fetch the true cart state from the database
+  const getHeaders = () => {
+    const token = localStorage.getItem('token');
+    return token ? { Authorization: `Bearer ${token}` } : { 'x-guest-id': getGuestId() };
+  };
+
   const fetchCart = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : { 'x-guest-id': getGuestId() };
-      
-      const res = await axios.get(`${backendUrl}/cart`, { headers });
-      
-      // Map the backend response to match our frontend UI structure
+      const res = await axios.get(`${backendUrl}/cart`, { headers: getHeaders() });
       if (res.data && res.data.items) {
-        const formattedCart = res.data.items.map(item => ({
-          product: item.product,
-          qty: item.quantity
-        }));
-        setCart(formattedCart);
+        setCart(res.data.items.map(item => ({ product: item.product, qty: item.quantity })));
       } else {
         setCart([]);
       }
@@ -40,47 +34,52 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Fetch from DB on mount
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  useEffect(() => { fetchCart(); }, []);
 
-  // 3. Add to Cart (Pushes to Database, then refreshes UI)
   const addToCart = async (product, requestedQty = 1) => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : { 'x-guest-id': getGuestId() };
-      
-      await axios.post(`${backendUrl}/cart/add`, {
-        productId: product.id,
-        quantity: requestedQty,
-        guestId: getGuestId()
-      }, { headers });
-      
-      await fetchCart(); // Re-sync the state with the database
+      await axios.post(`${backendUrl}/cart/add`, { productId: product.id, quantity: requestedQty, guestId: getGuestId() }, { headers: getHeaders() });
+      await fetchCart();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to add item to cart.');
     }
   };
 
-  // 4. Optimistic UI Updates for Quantity & Removal 
-  // (Maintains snappy frontend performance without needing immediate backend routes for every click)
-  const updateQuantity = (productId, newQty) => {
-    setCart(prevCart => prevCart.map(item => {
-      if (item.product.id === productId) {
-        const boundedQty = Math.max(1, Math.min(newQty, item.product.pStock));
-        return { ...item, qty: boundedQty };
-      }
-      return item;
-    }));
+  const updateQuantity = async (productId, newQty) => {
+    // 1. Optimistic UI update (feels instant to the user)
+    setCart(prevCart => prevCart.map(item => 
+      item.product.id === productId ? { ...item, qty: newQty } : item
+    ));
+    
+    // 2. Background API Sync
+    try {
+      await axios.put(`${backendUrl}/cart/update`, { productId, quantity: newQty }, { headers: getHeaders() });
+    } catch (err) {
+      fetchCart(); // Revert if backend fails
+    }
   };
 
-  const removeFromCart = (productId) => {
+  const removeFromCart = async (productId) => {
     setCart(prevCart => prevCart.filter(item => item.product.id !== productId));
+    try {
+      await axios.delete(`${backendUrl}/cart/remove/${productId}`, { headers: getHeaders() });
+    } catch (err) {
+      fetchCart();
+    }
+  };
+
+  // NEW: Hard clear for checkout success
+  const clearCart = async () => {
+    setCart([]);
+    try {
+      await axios.delete(`${backendUrl}/cart/clear`, { headers: getHeaders() });
+    } catch (err) {
+      console.error('Failed to clear backend cart', err);
+    }
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQuantity, removeFromCart, fetchCart, getGuestId }}>
+    <CartContext.Provider value={{ cart, addToCart, updateQuantity, removeFromCart, clearCart, fetchCart, getGuestId }}>
       {children}
     </CartContext.Provider>
   );

@@ -22,7 +22,7 @@ const majorIndianCities = [
 ];
 
 export default function Checkout() {
-  const { cart, removeFromCart } = useCart();
+  const { cart, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
   
   // UI States
@@ -150,9 +150,9 @@ export default function Checkout() {
               { headers: { Authorization: `Bearer ${authToken}` } }
             );
             
-            // Wipe the cart and route to the success page, passing the internal Order ID
-            cart.forEach(item => removeFromCart(item.product.id)); 
-            navigate('/order-success', { state: { orderId: orderResponseData.orderId } }); 
+            // THE FIX: Use the new single clearCart function!
+            await clearCart(); 
+            navigate('/order-success', { state: { orderId: orderResponseData.orderId } });
             
           } catch (verificationError) {
             navigate('/order-failed', { state: { reason: 'Payment signature verification failed.' } }); 
