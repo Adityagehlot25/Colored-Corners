@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# env
+.env
+.env.*
+
+# logs
+logs
+*.log
+
+# build
+dist/
+build/
+
+# mac
+.DS_Store
