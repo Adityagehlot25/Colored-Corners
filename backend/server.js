@@ -4,7 +4,7 @@ require('./src/models');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const xss = require('xss-clean'); // <-- Added back for security!
+const customXss = require('./src/middlewares/xssSanitizer');
 const sequelize = require('./src/config/database');
 
 const paymentRoutes = require('./src/routes/paymentRoutes');
@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Traps malicious HTML/JS payloads globally before they hit the DB
-app.use(xss()); 
+app.use(customXss()); 
 
 // --- RESOLVED ROUTES ---
 app.use('/payments', paymentRoutes);

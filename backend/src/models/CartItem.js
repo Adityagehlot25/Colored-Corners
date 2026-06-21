@@ -24,7 +24,13 @@ const CartItem = sequelize.define('CartItem', {
     defaultValue: 1
   }
 }, {
-  tableName: 'cart_items'
+  tableName: 'cart_items',
+  indexes: [
+    {
+      unique: true,
+      fields: ['cartId', 'productId'] // Protects the DB from race-condition duplicate rows!
+    }
+  ]
 });
 
 module.exports = CartItem;

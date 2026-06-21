@@ -27,6 +27,11 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ message: 'The user belonging to this token no longer exists.' });
     }
 
+    // 🚧 THE REAL-TIME BAN CHECK 
+    if (currentUser.isSuspended) {
+      return res.status(403).json({ message: 'Your account has been suspended by an Administrator.' });
+    }
+
     // 4. Attach the user object to the request so subsequent controllers can use it
     req.user = currentUser;
     next();

@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Product } = require('../models');
+const { sequelize, Product } = require('../models');
 
 // 1. PUBLIC: Get all active products with Search, Filters, and Out-of-Stock sorting (BR-SRCH-01)
 exports.getAllProducts = async (req, res) => {
@@ -22,7 +22,7 @@ exports.getAllProducts = async (req, res) => {
     const products = await Product.findAll({
       where: whereClause,
       order: [
-        ['pStock', 'DESC'], // Pushes 0 stock to the bottom
+        [sequelize.literal('"pStock" > 0'), 'DESC'], // True (In Stock) comes before False (Out of stock)
         ['createdAt', 'DESC']
       ]
     });

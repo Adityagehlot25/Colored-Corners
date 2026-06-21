@@ -39,7 +39,7 @@ exports.deductStockAtomically = async (orderId) => {
       }
 
       // 5. Concurrency Check: Ensure stock hasn't dropped below requested quantity
-      if (!product.isPre && product.pStock < quantity) {
+      if (!product.isPre && product.pStock < item.quantity) {
         throw new Error(`Insufficient stock for ${product.name}.`);
       }
 

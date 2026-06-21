@@ -100,6 +100,16 @@ exports.login = async (req, res) => {
 
     const isValid = await user.isValidPassword(password);
     if (!isValid) return res.status(401).json({ message: 'Invalid email or password.' });
+    
+    // ==========================================
+    // 🚧 DROP THE BAN GATE RIGHT HERE
+    // ==========================================
+    if (user.isSuspended) {
+      return res.status(403).json({ 
+        message: 'Your account has been suspended by an Administrator. Contact support.' 
+      });
+    }
+    // ==
 
     // --- THE CART MERGE LOGIC (PHASE 4) ---
     if (guestId) {

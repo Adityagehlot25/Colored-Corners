@@ -19,7 +19,7 @@ const User = sequelize.define('User', {
   },
   passwordHash: {
     type: DataTypes.STRING,
-    allowNull: true, 
+    allowNull: true,
   },
   firstName: {
     type: DataTypes.STRING,
@@ -65,7 +65,11 @@ const User = sequelize.define('User', {
   resetPasswordExpires: {
     type: DataTypes.DATE,
     allowNull: true,
-  }
+  },
+  isSuspended: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
 }, {
   // --- OPTIONS OBJECT (3rd argument) ---
   tableName: 'users',
@@ -91,7 +95,7 @@ const User = sequelize.define('User', {
   }
 });
 
-User.prototype.isValidPassword = async function(passwordAttempt) {
+User.prototype.isValidPassword = async function (passwordAttempt) {
   if (!this.passwordHash) return false;
   return await bcrypt.compare(passwordAttempt, this.passwordHash);
 };

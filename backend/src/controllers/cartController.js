@@ -77,7 +77,7 @@ exports.addToCart = async (req, res) => {
 
     if (cartItem) {
       // If adding exceeds physical stock, block it
-      if (cartItem.quantity + quantity > product.pStock) {
+      if (!product.isPre && (cartItem.quantity + quantity > product.pStock)) {
          return res.status(409).json({ message: `Cannot add more. You already have ${cartItem.quantity} in cart, and only ${product.pStock} total are available.` });
       }
       cartItem.quantity += quantity;
