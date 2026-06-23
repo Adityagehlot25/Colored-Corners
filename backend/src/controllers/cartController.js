@@ -4,7 +4,7 @@ const { Cart, CartItem, Product } = require('../models');
 // Helper function to resolve the user identity
 const getIdentity = (req) => {
   let userId = null;
-  const guestId = req.headers['x-guest-id'] || req.body.guestId;
+  const guestId = req.headers['x-guest-id'] || req.body?.guestId;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {

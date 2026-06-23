@@ -15,13 +15,18 @@ export default function ChooseRole() {
     try {
       // Grab the token they just got from Google
       const token = localStorage.getItem('token');
-      
+
       // Hit the backend route we built earlier
       await axios.put(
-        `${backendUrl}/auth/update-role`, 
+        `${backendUrl}/auth/update-role`,
         { role: selectedRole },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      // THE FIX: If your backend sends back a fresh JWT inside res.data.token, overwrite it!
+      if (res.data?.token) {
+        localStorage.setItem('token', res.data.token);
+      }
 
       // --- THE FIX: Clean up the flag here, AFTER they successfully choose! ---
       localStorage.removeItem('needsOnboarding');
@@ -43,13 +48,13 @@ export default function ChooseRole() {
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <button 
+        <button
           onClick={() => handleRoleSelection('CUSTOMER')}
           disabled={loading}
-          style={{ 
-            ...styles.button, 
-            padding: '20px', 
-            fontSize: '18px', 
+          style={{
+            ...styles.button,
+            padding: '20px',
+            fontSize: '18px',
             backgroundColor: '#2563EB',
             opacity: loading ? 0.6 : 1,
             cursor: loading ? 'not-allowed' : 'pointer'
@@ -58,13 +63,13 @@ export default function ChooseRole() {
           🛍️ I am here to Buy
         </button>
 
-        <button 
+        <button
           onClick={() => handleRoleSelection('SELLER')}
           disabled={loading}
-          style={{ 
-            ...styles.button, 
-            padding: '20px', 
-            fontSize: '18px', 
+          style={{
+            ...styles.button,
+            padding: '20px',
+            fontSize: '18px',
             backgroundColor: '#16A34A',
             opacity: loading ? 0.6 : 1,
             cursor: loading ? 'not-allowed' : 'pointer'

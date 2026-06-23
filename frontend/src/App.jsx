@@ -13,7 +13,6 @@ import ChooseRole from './pages/ChooseRole';
 import Dashboard from './pages/Dashboard';
 import SellerDashboard from './pages/SellerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
-import Catalogue from './pages/Catalogue';
 import ProductDetail from './pages/ProductDetail';
 import { CartProvider } from './context/CartContext';
 import Checkout from './pages/Checkout';
@@ -58,7 +57,6 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/seller-dashboard" element={<SellerDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/catalogue" element={<Catalogue />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />

@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@import "tailwindcss";
-
 /* Force the entire browser window to match your dark theme */
 body {
   background-color: #0A0A0A;
