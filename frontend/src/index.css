@@ -1,7 +1,84 @@
 @import "tailwindcss";
 
-/* Force the entire browser window to match your dark theme */
-body {
-  background-color: #0A0A0A;
-  color: #FFFFFF;
+@theme {
+  /* ========================================== */
+  /* 🎨 COLOURED CORNERS BOUTIQUE DESIGN SYSTEM */
+  /* ========================================== */
+
+  /* --- 1. FONTS --- */
+  --font-serif-instrument: "Instrument Serif", Georgia, serif;
+  --font-sans-inter: "Inter", system-ui, sans-serif;
+
+  /* --- 2. HEADINGS (Desktop) --- */
+  --text-heading-xxl-d: 64px;
+  --text-heading-xxl-d--line-height: 1.4;
+  --text-heading-xxl-d--letter-spacing: -0.04em;
+
+  --text-heading-xl-d: 48px;
+  --text-heading-xl-d--line-height: 1.2;
+  --text-heading-xl-d--letter-spacing: -0.04em;
+
+  --text-heading-l-d: 36px;
+  --text-heading-l-d--line-height: 1.4;
+  --text-heading-l-d--letter-spacing: -0.04em;
+
+  /* --- 3. HEADINGS (Mobile) --- */
+  --text-heading-xxl-m: 40px;
+  --text-heading-xxl-m--line-height: 1.4;
+  --text-heading-xxl-m--letter-spacing: -0.04em;
+
+  --text-heading-xl-m: 32px;
+  --text-heading-xl-m--line-height: 1.2;
+  --text-heading-xl-m--letter-spacing: -0.04em;
+
+  --text-heading-l-m: 24px;
+  --text-heading-l-m--line-height: 1.4;
+  --text-heading-l-m--letter-spacing: -0.04em;
+
+  /* --- 4. BODY TEXT (Desktop) --- */
+  --text-body-xl-d: 20px;
+  --text-body-xl-d--line-height: 1.6;
+  --text-body-xl-d--letter-spacing: -0.02em;
+
+  --text-body-l-d: 18px;
+  --text-body-l-d--line-height: 1.6;
+  --text-body-l-d--letter-spacing: -0.02em;
+
+  --text-body-m-d: 16px;
+  --text-body-m-d--line-height: 1.6;
+  --text-body-m-d--letter-spacing: -0.02em;
+
+  /* --- 5. BODY TEXT (Mobile) --- */
+  --text-body-xl-m: 18px;
+  --text-body-xl-m--line-height: 1.6;
+  --text-body-xl-m--letter-spacing: -0.02em;
+
+  --text-body-l-m: 16px;
+  --text-body-l-m--line-height: 1.6;
+  --text-body-l-m--letter-spacing: -0.02em;
+
+  --text-body-m-m: 14px;
+  --text-body-m-m--line-height: 1.6;
+  --text-body-m-m--letter-spacing: -0.02em;
+}
+
+/* --- SAFETY OVERRIDES --- */
+@layer utilities {
+  .font-instrument {
+    font-family: 'Instrument Serif', Georgia, serif !important;
+  }
+
+  /* ➔ THE FORCE-INTER OVERRIDE */
+  .font-inter {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  }
+
+  /* 🚀 THE FIXED ZERO-DOM DOT GRID */
+  .bg-boutique-grid {
+    background:
+      radial-gradient(rgba(92, 80, 64, 0.25) 1.5px, transparent 1.5px),
+      #FFF9EE;
+    /* ➔ Dots on layer 1, solid cream strictly on layer 2! */
+    background-size: 24px 24px;
+  }
 }

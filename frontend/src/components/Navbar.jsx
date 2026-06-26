@@ -1,107 +1,91 @@
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
-import { useCart } from '../context/CartContext';
-import CartSidebar from './CartSidebar';
+import { Link, useNavigate } from 'react-router-dom';
+// 🩹 FIXED: Pointed strictly to lowercase './icons' to prevent Linux production build crashes!
+import { SearchIcon, CompanyNameText, BrandLogo } from './icons';
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const { cart } = useCart();
 
-  // 1. Determine Auth State
+  // Re-using your bulletproof Auth State checker
   const token = localStorage.getItem('token');
-  const isLoggedIn = !!token; // Returns true if token exists, false if null
-  let userRole = 'CUSTOMER';
-
-  // 2. Safely parse role only if logged in
-  if (isLoggedIn) {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      userRole = payload.role;
-    } catch (e) {
-      console.error('Failed to parse token');
-    }
-  }
-
-  const cartItemCount = cart.reduce((total, item) => total + item.qty, 0);
+  const isLoggedIn = !!token;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('cart');
     window.location.href = '/signin';
   };
 
-  const getLinkClass = (path) => {
-    const isActive = location.pathname === path;
-    return `px-4 py-2 rounded-lg transition-all duration-200 ${
-      isActive 
-        ? 'text-white font-bold bg-white/10' 
-        : 'text-gray-400 font-normal hover:bg-white/5 hover:text-gray-200'
-    }`;
-  };
-
   return (
-    <>
-      <nav className="flex justify-between items-center px-10 py-4 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-[100]">
-        <Link to="/dashboard" className="font-bold text-xl text-white hover:text-green-500 transition-colors">
-          Coloured Corners
+    <header className="sticky top-0 z-50 w-full">
+      {/* FIGMA CONTAINER: w: 1440, h: 83, px: 64, py: 20 */}
+      <nav className="mx-auto flex h-[83px] max-w-[1440px] items-center justify-between px-16 py-5">
+
+        {/* --- LOGO + COMPANY NAME LOCKUP --- */}
+        <Link to="/" className="flex h-[43px] w-[230px] items-center gap-3">
+
+          {/* THE SWAP: Native SVG Components taking control! */}
+          <BrandLogo className="w-[39px] h-[43px] shrink-0" />
+          <CompanyNameText className="w-[191px] h-[29px]" />
+
         </Link>
 
-        <div className="flex gap-4 items-center">
-          <Link to="/dashboard" className={getLinkClass('/dashboard')}>
-            🛍️ Marketplace
+        {/* --- NAV LINKS CONTAINER --- */}
+        <div className="flex items-center gap-3 text-sm font-medium text-[#5C5140]">
+
+          {/* Shop Button (w: 57, h: 35, bg: #DBD0BC, rounded: 6px) */}
+          <Link
+            to="/dashboard"
+            className="flex h-[35px] items-center justify-center rounded-[6px] bg-[#DBD0BC] px-3 transition-colors hover:bg-[#c5b9a3]"
+          >
+            shop
           </Link>
 
-          {userRole === 'ADMIN' && (
-            <Link to="/admin-dashboard" className={getLinkClass('/admin-dashboard')}>
-              🛡️ Admin Panel
-            </Link>
-          )}
-
-          {(userRole === 'SELLER' || userRole === 'ADMIN') && (
-            <Link to="/seller-dashboard" className={getLinkClass('/seller-dashboard')}>
-              🏪 Seller Hub
-            </Link>
-          )}
-
-          <button
-            onClick={() => setIsCartOpen(true)}
-            className="relative px-4 py-2 text-gray-400 hover:text-gray-200 hover:bg-white/5 rounded-lg transition-all"
+          {/* Contact Button (w: 78, h: 35, bg: #DBD0BC, rounded: 6px) */}
+          <Link
+            to="/contact"
+            className="flex h-[35px] items-center justify-center rounded-[6px] bg-[#DBD0BC] px-3 transition-colors hover:bg-[#c5b9a3]"
           >
-            🛒 Cart
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-2 bg-green-600 text-white rounded-full px-2 py-0.5 text-xs font-bold">
-                {cartItemCount}
-              </span>
-            )}
+            Contact
+          </Link>
+
+          {/* About Us Button (w: 86, h: 35, bg: #DBD0BC, rounded: 6px) */}
+          <Link
+            to="/about"
+            className="flex h-[35px] items-center justify-center rounded-[6px] bg-[#DBD0BC] px-3 transition-colors hover:bg-[#c5b9a3]"
+          >
+            About Us
+          </Link>
+
+          {/* --- THE INTERCHANGEABLE AUTH BUTTON --- */}
+          {/* FIGMA: w: 65, h: 35, bg: #5C5140, rounded: 6px */}
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="flex h-[35px] cursor-pointer items-center justify-center rounded-[6px] bg-[#5C5140] px-3 text-white transition-colors hover:bg-[#433a2e]"
+            >
+              Log out
+            </button>
+          ) : (
+            <Link
+              to="/signin"
+              className="flex h-[35px] items-center justify-center rounded-[6px] bg-[#5C5140] px-3 text-white transition-colors hover:bg-[#433a2e]"
+            >
+              Log in
+            </Link>
+          )}
+
+          {/* --- SEARCH ICON --- */}
+          {/* FIGMA: w: 36, h: 36, rounded: 18px, p: 9 */}
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="ml-1 flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-[18px] bg-white/40 p-[9px] text-[#5C5140] transition-all hover:bg-white/80 hover:shadow-xs"
+            title="Search Products"
+          >
+            <SearchIcon />
           </button>
 
-          {/* --- DYNAMIC AUTHENTICATION RENDER --- */}
-          {isLoggedIn ? (
-            <>
-              <Link to="/profile" className={getLinkClass('/profile')}>
-                👤 Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-transparent text-red-500 border border-red-500/30 px-4 py-2 rounded-lg cursor-pointer ml-2 hover:bg-red-500/10 transition-colors"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-             <Link
-               to="/signin"
-               className="bg-green-600 text-white px-5 py-2 rounded-lg ml-2 hover:bg-green-500 transition-colors font-bold"
-             >
-               Sign In
-             </Link>
-          )}
         </div>
-      </nav>
 
-      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-    </>
+      </nav>
+    </header>
   );
 }
