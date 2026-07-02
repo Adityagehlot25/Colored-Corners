@@ -35,8 +35,10 @@ export default function OAuthSuccess() {
   }, [searchParams, navigate]);
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif' }}>
-      <h2>{status}</h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#FFF9EE] text-[#5C5140] px-6 text-center">
+      <h2 className="text-[var(--text-heading-xl-m)] leading-[var(--text-heading-xl-m--line-height)] tracking-[var(--text-heading-xl-m--letter-spacing)] lg:text-[var(--text-heading-xl-d)] lg:leading-[var(--text-heading-xl-d--line-height)] lg:tracking-[var(--text-heading-xl-d--letter-spacing)] text-[#3A332B] font-serif">
+        {status}
+      </h2>
     </div>
   );
 }

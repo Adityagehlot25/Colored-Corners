@@ -16,13 +16,13 @@ exports.googleCallback = async (req, res) => {
     const internalToken = generateToken(user);
 
     // --- THE FIX: We MUST redirect back to the React frontend, NOT send JSON! ---
-    const frontendUrl = process.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     res.redirect(`${frontendUrl}/oauth-success?token=${internalToken}`);
 
   } catch (error) {
     console.error('OAuth Error:', error);
     // If it fails, bounce them back to sign in
-    const frontendUrl = process.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     res.redirect(`${frontendUrl}/signin?error=oauth_failed`);
   }
 };
@@ -59,7 +59,7 @@ exports.register = async (req, res) => {
     });
 
     // 3. Send the Verification Email
-    const verificationUrl = `${process.env.VITE_FRONTEND_URL || 'http://localhost:5173'}/verify/${rawToken}`;
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify/${rawToken}`;
     const message = `Welcome to Coloured Corners! \n\nPlease verify your email by clicking this link: \n${verificationUrl}`;
 
     try {
@@ -75,6 +75,7 @@ exports.register = async (req, res) => {
 
     res.status(201).json({
       message: 'Registration successful! Please check your email to verify your account before logging in.',
+      token: generateToken(user),
     });
 
   } catch (error) {
@@ -200,7 +201,7 @@ exports.resendVerification = async (req, res) => {
     user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
     await user.save();
 
-    const verificationUrl = `${process.env.VITE_FRONTEND_URL || 'http://localhost:5173'}/verify/${rawToken}`;
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify/${rawToken}`;
     const message = `Welcome to Coloured Corners! \n\nPlease verify your email by clicking this link: \n${verificationUrl}`;
 
     try {
@@ -236,7 +237,7 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpires = Date.now() + 1 * 60 * 60 * 1000; 
     await user.save();
 
-    const resetUrl = `${process.env.VITE_FRONTEND_URL || 'http://localhost:5173'}/reset-password/${rawToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${rawToken}`;
     const message = `You are receiving this email because you requested a password reset.\n\nClick below to set a new password:\n${resetUrl}`;
 
     try {

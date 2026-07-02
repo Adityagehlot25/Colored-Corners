@@ -22,6 +22,10 @@
   --text-heading-l-d--line-height: 1.4;
   --text-heading-l-d--letter-spacing: -0.04em;
 
+  --text-heading-m-d: 24px;
+  --text-heading-m-d--line-height: 1.4;
+  --text-heading-m-d--letter-spacing: -0.04em;
+
   /* --- 3. HEADINGS (Mobile) --- */
   --text-heading-xxl-m: 40px;
   --text-heading-xxl-m--line-height: 1.4;
@@ -35,7 +39,15 @@
   --text-heading-l-m--line-height: 1.4;
   --text-heading-l-m--letter-spacing: -0.04em;
 
+  --text-heading-m-m: 20px;
+  --text-heading-m-m--line-height: 1.4;
+  --text-heading-m-m--letter-spacing: -0.04em;
+
   /* --- 4. BODY TEXT (Desktop) --- */
+  --text-body-xxl-d: 24px;
+  --text-body-xxl-d--line-height: 1.6;
+  --text-body-xxl-d--letter-spacing: -0.02em;
+
   --text-body-xl-d: 20px;
   --text-body-xl-d--line-height: 1.6;
   --text-body-xl-d--letter-spacing: -0.02em;
@@ -48,7 +60,15 @@
   --text-body-m-d--line-height: 1.6;
   --text-body-m-d--letter-spacing: -0.02em;
 
+  --text-body-s-d: 14px;
+  --text-body-s-d--line-height: 1.6;
+  --text-body-s-d--letter-spacing: -0.02em;
+
   /* --- 5. BODY TEXT (Mobile) --- */
+  --text-body-xxl-m: 20px;
+  --text-body-xxl-m--line-height: 1.6;
+  --text-body-xxl-m--letter-spacing: -0.02em;
+
   --text-body-xl-m: 18px;
   --text-body-xl-m--line-height: 1.6;
   --text-body-xl-m--letter-spacing: -0.02em;
@@ -60,6 +80,27 @@
   --text-body-m-m: 14px;
   --text-body-m-m--line-height: 1.6;
   --text-body-m-m--letter-spacing: -0.02em;
+
+  --text-body-s-m: 12px;
+  --text-body-s-m--line-height: 1.6;
+  --text-body-s-m--letter-spacing: -0.02em;
+
+  /* --- 6. BUTTONS & LABELS --- */
+  --text-button-nav-d: 16px;
+  --text-button-nav-d--line-height: 1.2;
+  --text-button-nav-d--letter-spacing: -0.02em;
+
+  --text-button-nav-m: 16px;
+  --text-button-nav-m--line-height: 1.2;
+  --text-button-nav-m--letter-spacing: -0.02em;
+
+  --text-label-eyebrow-d: 14px;
+  --text-label-eyebrow-d--line-height: 1.2;
+  --text-label-eyebrow-d--letter-spacing: -0.02em;
+
+  --text-label-eyebrow-m: 14px;
+  --text-label-eyebrow-m--line-height: 1.2;
+  --text-label-eyebrow-m--letter-spacing: -0.02em;
 }
 
 /* --- SAFETY OVERRIDES --- */
@@ -80,5 +121,180 @@
       #FFF9EE;
     /* ➔ Dots on layer 1, solid cream strictly on layer 2! */
     background-size: 24px 24px;
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans-inter);
+    color: #5C5140;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-sans-inter);
+    font-size: var(--text-body-m-m);
+    line-height: var(--text-body-m-m--line-height);
+    letter-spacing: var(--text-body-m-m--letter-spacing);
+    color: #5C5140;
+    background: #FFF9EE;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif-instrument);
+    color: #3A332B;
+    margin: 0;
+  }
+
+  h1 {
+    font-size: var(--text-heading-xxl-m) !important;
+    line-height: var(--text-heading-xxl-m--line-height) !important;
+    letter-spacing: var(--text-heading-xxl-m--letter-spacing) !important;
+  }
+
+  h2 {
+    font-size: var(--text-heading-xl-m) !important;
+    line-height: var(--text-heading-xl-m--line-height) !important;
+    letter-spacing: var(--text-heading-xl-m--letter-spacing) !important;
+  }
+
+  h3 {
+    font-size: var(--text-heading-l-m) !important;
+    line-height: var(--text-heading-l-m--line-height) !important;
+    letter-spacing: var(--text-heading-l-m--letter-spacing) !important;
+  }
+
+  h4 {
+    font-size: var(--text-heading-m-m) !important;
+    line-height: var(--text-heading-m-m--line-height) !important;
+    letter-spacing: var(--text-heading-m-m--letter-spacing) !important;
+  }
+
+  h5 {
+    font-size: var(--text-body-xxl-m) !important;
+    line-height: var(--text-body-xxl-m--line-height) !important;
+    letter-spacing: var(--text-body-xxl-m--letter-spacing) !important;
+  }
+
+  h6 {
+    font-size: var(--text-body-xl-m) !important;
+    line-height: var(--text-body-xl-m--line-height) !important;
+    letter-spacing: var(--text-body-xl-m--letter-spacing) !important;
+  }
+
+  p,
+  li,
+  span,
+  a,
+  label,
+  input,
+  textarea,
+  select,
+  button,
+  small {
+    font-family: inherit;
+  }
+
+  p,
+  li {
+    font-size: var(--text-body-m-m) !important;
+    line-height: var(--text-body-m-m--line-height) !important;
+    letter-spacing: var(--text-body-m-m--letter-spacing) !important;
+  }
+
+  a,
+  button {
+    font-size: var(--text-button-nav-m) !important;
+    line-height: var(--text-button-nav-m--line-height) !important;
+    letter-spacing: var(--text-button-nav-m--letter-spacing) !important;
+  }
+
+  label {
+    font-size: var(--text-label-eyebrow-m) !important;
+    line-height: var(--text-label-eyebrow-m--line-height) !important;
+    letter-spacing: var(--text-label-eyebrow-m--letter-spacing) !important;
+  }
+
+  small {
+    font-size: var(--text-body-s-m) !important;
+    line-height: var(--text-body-s-m--line-height) !important;
+    letter-spacing: var(--text-body-s-m--letter-spacing) !important;
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      font-size: var(--text-body-m-d);
+      line-height: var(--text-body-m-d--line-height);
+      letter-spacing: var(--text-body-m-d--letter-spacing);
+    }
+
+    h1 {
+      font-size: var(--text-heading-xxl-d) !important;
+      line-height: var(--text-heading-xxl-d--line-height) !important;
+      letter-spacing: var(--text-heading-xxl-d--letter-spacing) !important;
+    }
+
+    h2 {
+      font-size: var(--text-heading-xl-d) !important;
+      line-height: var(--text-heading-xl-d--line-height) !important;
+      letter-spacing: var(--text-heading-xl-d--letter-spacing) !important;
+    }
+
+    h3 {
+      font-size: var(--text-heading-l-d) !important;
+      line-height: var(--text-heading-l-d--line-height) !important;
+      letter-spacing: var(--text-heading-l-d--letter-spacing) !important;
+    }
+
+    h4 {
+      font-size: var(--text-heading-m-d) !important;
+      line-height: var(--text-heading-m-d--line-height) !important;
+      letter-spacing: var(--text-heading-m-d--letter-spacing) !important;
+    }
+
+    h5 {
+      font-size: var(--text-body-xxl-d) !important;
+      line-height: var(--text-body-xxl-d--line-height) !important;
+      letter-spacing: var(--text-body-xxl-d--letter-spacing) !important;
+    }
+
+    h6 {
+      font-size: var(--text-body-xl-d) !important;
+      line-height: var(--text-body-xl-d--line-height) !important;
+      letter-spacing: var(--text-body-xl-d--letter-spacing) !important;
+    }
+
+    p,
+    li {
+      font-size: var(--text-body-m-d) !important;
+      line-height: var(--text-body-m-d--line-height) !important;
+      letter-spacing: var(--text-body-m-d--letter-spacing) !important;
+    }
+
+    a,
+    button {
+      font-size: var(--text-button-nav-d) !important;
+      line-height: var(--text-button-nav-d--line-height) !important;
+      letter-spacing: var(--text-button-nav-d--letter-spacing) !important;
+    }
+
+    label {
+      font-size: var(--text-label-eyebrow-d) !important;
+      line-height: var(--text-label-eyebrow-d--line-height) !important;
+      letter-spacing: var(--text-label-eyebrow-d--letter-spacing) !important;
+    }
+
+    small {
+      font-size: var(--text-body-s-d) !important;
+      line-height: var(--text-body-s-d--line-height) !important;
+      letter-spacing: var(--text-body-s-d--letter-spacing) !important;
+    }
   }
 }

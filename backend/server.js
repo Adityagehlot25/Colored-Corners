@@ -4,7 +4,6 @@ require('./src/models');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const customXss = require('./src/middlewares/xssSanitizer');
 const sequelize = require('./src/config/database');
 
 const paymentRoutes = require('./src/routes/paymentRoutes');
@@ -25,9 +24,6 @@ app.use(cors());
 // Parses incoming JSON payloads
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Traps malicious HTML/JS payloads globally before they hit the DB
-app.use(customXss()); 
 
 // --- RESOLVED ROUTES ---
 app.use('/payments', paymentRoutes);
