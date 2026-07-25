@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import Illustration from '../assets/Illustration.svg';
-import Logo from '../assets/Logo.svg';
+
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -48,7 +47,7 @@ export default function VerifyEmail() {
 
       <section className="relative z-10 flex flex-col lg:flex-row w-full max-w-[1440px] mx-auto pt-[64px] pb-[100px] px-[49px] gap-[64px] justify-center items-center lg:items-start">
         <div className="w-full max-w-[682px] h-[689px] shrink-0 flex items-center justify-center">
-          <img src={Illustration} alt="Handcrafted Treasures Showcase" width={682} height={689} loading="eager" className="w-full h-full object-contain mix-blend-multiply drop-shadow-sm" />
+          <img src="/Illustration.svg" alt="Handcrafted Treasures Showcase" width={682} height={689} loading="eager" className="w-full h-full object-contain mix-blend-multiply drop-shadow-sm" />
         </div>
 
         <div className="flex flex-col w-full max-w-[479px] h-[689px] justify-center gap-[40px] shrink-0">
@@ -77,7 +76,7 @@ export default function VerifyEmail() {
       <footer className="w-full bg-[#3A332B] text-[#FFF9EE] mt-auto relative rounded-t-[32px] pt-16 pb-12 px-[80px]">
         <div className="absolute left-1/2 -translate-x-1/2 -top-[120px] w-[240px] h-[460px] pointer-events-none">
           <img
-            src={Logo}
+            src="/Logo.svg"
             alt="Coloured Corners Brand Icon"
             className="w-full h-full object-contain object-bottom drop-shadow-md"
           />

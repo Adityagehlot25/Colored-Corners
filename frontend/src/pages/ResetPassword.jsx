@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import Illustration from '../assets/Illustration.svg';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -51,7 +50,7 @@ export default function ResetPassword() {
         
         {/* Left Column */}
         <div className="w-full max-w-[682px] h-[689px] shrink-0 flex items-center justify-center">
-          <img src={Illustration} alt="Reset Password" className="w-full h-full object-contain mix-blend-multiply drop-shadow-sm" />
+          <img src="/Illustration.svg" alt="Reset Password" className="w-full h-full object-contain mix-blend-multiply drop-shadow-sm" />
         </div>
 
         {/* Right Column */}

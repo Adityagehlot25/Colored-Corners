@@ -122,6 +122,17 @@
     /* ➔ Dots on layer 1, solid cream strictly on layer 2! */
     background-size: 24px 24px;
   }
+/* 🎠 NATIVE INFINITE MARQUEE */
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 40s linear infinite;
+  }
 }
 
 @layer base {

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import Illustration from '../assets/Illustration.svg';
-import Logo from '../assets/Logo.svg';
+
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -72,7 +71,7 @@ export default function SignUpPage() {
         {/* Left Column: Illustration (Fixed 682px width) */}
         <div className="w-full max-w-[682px] h-[689px] shrink-0 flex items-center justify-center">
           <img
-            src={Illustration}
+            src="/Illustration.svg"
             alt="Handcrafted Treasures Showcase"
             width={682}
             height={689}
@@ -189,7 +188,7 @@ export default function SignUpPage() {
         {/* House Illustration overlap */}
         <div className="absolute left-1/2 -translate-x-1/2 -top-[120px] w-[240px] h-[460px] pointer-events-none">
            <img 
-             src={Logo} 
+             src="/Logo.svg"
              alt="Coloured Corners Brand Icon" 
              className="w-full h-full object-contain object-bottom drop-shadow-md" 
            />
